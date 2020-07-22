@@ -2,15 +2,31 @@
 
 This is a web-app and workflow for computationally screening PCR-based assays against the increasing number of SARS-CoV-2 sequences being deposited for public release in GISAID and GenBank. Assays are assessed for binding based on free energy and melting temperature to determine whether binding occurs between the assay oligonucleotides (primers and probe), and target sequence.
 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
 ## LANL software requirements
 
 The following software are required and the executable binaries should be put under your system PATH:
 
-1. ThermonucleotideBLAST: ThermonucleotideBLAST is a software program for searching a target database of nucleic acid sequences using an assay-specific query. The detail instructions for installation can be found on software's github https://github.com/jgans/thermonucleotideBLAST.
+1. ThermonucleotideBLAST
+    
+    ThermonucleotideBLAST is a software program for searching a target database of nucleic acid sequences using an assay-specific query. The detail instructions for installation can be found on software's github https://github.com/jgans/thermonucleotideBLAST.
 
-2. EpiCoV_downloader: This is a GISAID downloader to retrieve SARS-COV-2 genomes and the metadata. The detail instructions for installation can be found on software's github https://github.com/poeli/EpiCoV_downloader.
+2. EpiCoV_downloader
 
-3. PhyD3 (custom version): This is a forked version of the original phyd3 for LANL COVID19 assay validation to display phylogenetic tree with assay evaluation results. The detail instructions for installation can be found on software's github https://github.com/poeli/phyd3.
+    This is a GISAID sequence downloader for retrieving SARS-COV-2 genomes and the metadata. The detail instructions for installation can be found on software's github https://github.com/poeli/EpiCoV_downloader.
+
+3. PhyD3-am
+
+    This web-app includes a modified version of PhyD3 (GPL3) and visualizations specifically developed for displaying stats, metadata, phylogenetic tree and assay evaluation results. Here is a simple installation and usage:
+
+    ```
+    $ cd phyd3-am/
+    $ npm install
+    $ node phyd3.js
+    ```
+
+    The detail information can be found on original software's github https://github.com/vibbits/phyd3. 
 
 ## Python library requirements
 

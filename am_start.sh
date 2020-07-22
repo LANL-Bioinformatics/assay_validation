@@ -22,7 +22,7 @@ usage()
 {
     echo "usage: am_start.sh [-h] -u [STR] -p [STR] -e [STR] -m [STR] -M [STR] -s [STR] -r [STR] -R [STR] -f [STR] -t [STR]
 
-The following arguments are required: 
+The following arguments are required:
     '-u', '--gisaid_username' <username>
         This is your username to log into gisaid.org
 
@@ -147,6 +147,8 @@ init_dir $results_directory
 init_dir $fasta_directory
 init_dir $tnt_results_directory
 init_dir $phyd3d_dist_directory
+
+export PATH=scripts/:$PATH
 
 echo "Downloading genomes..."
 am_download.py \

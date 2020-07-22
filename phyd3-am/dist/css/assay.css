@@ -1,0 +1,202 @@
+div.dataTables_wrapper {
+  font: 0.8em sans-serif;
+}
+
+div.dataTables_wrapper td,
+div.dataTables_wrapper th {
+  padding: 0.6rem;
+}
+td.dt-nowrap {
+  white-space: nowrap;
+}
+th.dt-nowrap {
+  white-space: nowrap;
+}
+
+.popup {
+  padding: 0.5rem;
+  background-color: #ccc;
+}
+
+.table-area {
+  position: relative;
+  width: 100%;
+}
+
+.spinner {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+}
+
+.hm_spinner {
+  position: absolute;
+  top: 0rem;
+  right: 0rem;
+}
+
+#loading_spinner, #hm_loading_spinner {
+  height: 45px;
+  width: 45px;
+}
+
+.logo-5 {
+  max-width: 5rem;
+  max-height: 5rem;
+}
+.logo-6 {
+  max-width: 6rem;
+  max-height: 6rem;
+}
+.logo-7 {
+  max-width: 7rem;
+  max-height: 7rem;
+}
+.logo-8 {
+  max-width: 8rem;
+  max-height: 8rem;
+}
+.logo-9 {
+  max-width: 9rem;
+  max-height: 9rem;
+}
+
+.sidebar-ind-holder {
+  visibility: hidden;
+  width: 14px;
+  height: 44px;
+  position: absolute;
+  top: 4px;
+  left: 0px;
+  right: auto;
+  z-index: 9000;
+  background-color: rgb(242, 242, 242);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 5px 1px;
+  cursor: pointer;
+  padding: 0px;
+  transition: top 0.3s ease-out 0s, left 0.3s ease-out 0s,
+    width 0.3s ease-out 0s, height 0.3s ease-out 0s;
+  border-radius: 0px 6px 6px 0px;
+}
+.sidebar-ind {
+  visibility: hidden;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  top: 50%;
+  left: 50%;
+  line-height: 30px;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  margin-left: auto;
+  margin-right: auto;
+  vertical-align: middle;
+  color: rgb(68, 68, 68);
+  font-size: 12px;
+}
+
+.sidebar {
+    width: 0;
+    overflow: hidden;
+}
+
+.sidebar.show {
+    width: 6rem!important;
+    z-index: 8000;
+}
+
+#sidebarToggle {
+    position: absolute;
+    z-index: 9000;
+}
+
+#phyHeatmap-legend a.dropdown-item div{
+    width: 0.8rem;
+    height: 0.8rem;
+    display: inline-block;
+}
+
+#nodeHeight {
+    width: 3rem;
+}
+
+@media (min-width: 768px) {
+  .spinner {
+    position: initial;
+    top: unset;
+    right: unset;
+  }
+  .page-wrapper {
+    position: inherit;
+    margin-left: 14rem;
+    /* border-left: 1px solid #e7e7e7; */
+  }
+
+  .table-area {
+    height: 20rem;
+  }
+
+  .modal-dialog {
+    max-width: 700px;
+  }
+}
+
+.tooltip {
+  font-size: 0.8rem;
+}
+
+.tooltip > .tooltip-inner {
+  background-color: rgba(0,0,0,.8);
+}
+
+.tooltip > .arrow {
+  /* visibility: hidden; */
+  border-color: rgba(0,0,0,.8);
+  opacity: 0.8;
+}
+
+.tooltip > .tooltip-inner > div > p {
+  text-align: left;
+}
+
+.tooltip > .tooltip-inner > div > p > span {
+  height: 1.2rem;
+}
+
+text.name:hover {
+  font-weight: bolder;
+}
+
+text.legend:hover {
+  font-weight: bolder;
+  cursor: pointer;
+}
+
+rect.heatmap:hover {
+  opacity: 0.5;
+}
+
+g.leaf:hover > rect.pointer {
+  opacity: 0.8 !important;
+}
+
+g.leaf:hover > text.name {
+  font-weight: bolder;
+}
+
+rect.pointer:hover {
+  opacity: 0.8 !important;
+}
+
+#assayResultModal table {
+  font-size: 0.8rem;
+}
+
+#assayResultModal-body {
+  font-size: 0.9rem;
+}
+
+table.table-alignment td {
+  font-family: monospace;
+  white-space: pre;
+}
