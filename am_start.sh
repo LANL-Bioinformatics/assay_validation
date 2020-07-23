@@ -174,9 +174,9 @@ echo "Generating data for visualization..."
 primer_validation_vis.py \
     -n $newick_treefile \
     -m $resource_directory/metadata.tsv \
-    -p match_table.csv \
+    -p $results_directory/match_table.csv \
     -a $resource_directory/assay.txt \
-    -r Assay_Results.json \
+    -r $results_directory/Assay_Results.json \
     -o dist/data/SARS-CoV-2.xml
 
 cp $resource_directory/db_totals.json dist/data/
