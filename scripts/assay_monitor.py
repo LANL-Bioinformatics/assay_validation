@@ -33,7 +33,6 @@ Dependencies:
     new_tnt_parse.py
     assay_sum_table.py
     seq_db_filter_funx.py
-
     TNTBLAST
 
 
@@ -77,7 +76,6 @@ CDC-2019-nCoV_N1 GACCCCAAAATCAGCGAAAT TCTGGTTACTGCCAGTTGAATCTG ACCCCGCATTACGTTTG
         Example first two lines:
 Row     CC      GC      AC      TC      CG      GG      AG      TG      CA      GA      AA      TA      CT      GT      AT      TT
 CC      0.0     0.3     0.5     -0.3    6.3     17.5    19.2    11.9    5.1     15.7    11.4    12.4    0.4     11.0    10.4    3.7
-
 
 @author: adanm
 """
@@ -126,13 +124,7 @@ def generate_fna_lists(fasta_dir):
                  and not re.match(r'EPI.*\.fna', f)]
     genbank_file_list.sort()
 
-    ''' Get list of all gisaid files '''
-    gisaid_file_list = [os.path.join(fasta_dir, f) for f in os.listdir(fasta_dir)
-                 if re.match(r'.*\.fna', f)
-                 and os.path.join(fasta_dir, f) not in genbank_file_list ]
-    gisaid_file_list.sort()
-
-    return genbank_file_list, gisaid_file_list
+    return genbank_file_list
 
 
 def run_tnt_blast(sequence_file, results_directory, tntblast_location, assay_file):
@@ -147,28 +139,6 @@ def run_tnt_blast(sequence_file, results_directory, tntblast_location, assay_fil
 
     return tnt_results_path
 
-
-def determine_negatives(assay_file, seq_accession, full_dictionary, positives_type, negatives_type):
-    # Jason's determine_negatives code
-
-    ''' Negatives '''
-    # Find which assays were negative from original list
-    assay_list = full_dictionary[assay]
-
-    for assay_dictionary in assay_list:
-        positives_list = assay_dictionary[positives_type]
-
-        found_match = False
-
-        for acc_dictionary in positives_list:
-            if seq_accession == acc_dictionary['Accession']:
-                found_match = True
-                break
-
-        if not found_match:
-            assay_dictionary[negatives_type].append( { "Accession" : seq_accession} )
-
-    return full_dictionary
 
 
 
@@ -216,22 +186,21 @@ def main():
     results_file = os.path.join(results_dir, "Assay_Results.json")
     combined_fasta = os.path.join(fasta_dir, "All_Seqs.fasta")
     three_prime_table = os.path.join(resource_dir, "del_ct_table.txt")
+    negatives_list_output_file = os.path.join(resource_dir, "assay_failures.tsv")
 
     # Variable
     del_ct_threshhold = 2.0
 
 
-
-    ''' ####################### Generate Databases ######################### '''
     tic = time.perf_counter()
+    ''' ####################### Generate Databases ######################### '''
 
-    genbank_file_list, gisaid_file_list = generate_fna_lists(fasta_dir)
+    genbank_file_list = generate_fna_lists(fasta_dir)
 
     ''' ######################## Filter Databases ########################## '''
 
-    file_list, overlap_tallies, genbank_tallies, gisaid_tallies, \
-        total_list_len = filt_db.filter_dbs_overlap_last(
-        genbank_file_list, gisaid_file_list, minimum_file_length_considered)
+    file_list, genbank_tallies, total_list_len = filt_db.filter_dbs_output_all(
+        genbank_file_list, minimum_file_length_considered)
 
     ''' ##################### Combine Sequence Files ####################### '''
 
@@ -248,8 +217,7 @@ def main():
             accession_list.append(accession)
 
     ''' ##################### Output DB Stats Files ######################## '''
-    db_stats.generate_db_stats(overlap_tallies, genbank_tallies, gisaid_tallies,
-                      total_list_len, db_stats_file, db_totals_file)
+    db_stats.generate_db_stats(genbank_tallies, total_list_len, db_stats_file, db_totals_file)
 
     toc = time.perf_counter()
     elapsed_time = toc-tic
@@ -312,7 +280,7 @@ def main():
 
     print("\nDetermining Negatives and Adding To Metadata Dictionary...")
     for accession in accession_list:
-        Full_Dict = determine_negatives(assay_file, accession, Full_Dict, "True Positives", "False Negatives")
+        Full_Dict = nuparse.determine_negatives(assay_file, accession, Full_Dict, "True Positives", "False Negatives")
 
 
     toc = time.perf_counter()
@@ -360,6 +328,8 @@ def main():
 
 
 
+
+
     ''' Prep sequence list '''
     nuparse.make_sequence_list_file(seq_file, fasta_dir)
 
@@ -377,6 +347,8 @@ def main():
     minutes = int(elapsed_time / 60 - hours * 60)
     seconds = elapsed_time - minutes * 60 - hours * 3600
     print("Match Table Runtime: {} hours, {} minutes, {} seconds".format(hours, minutes, seconds))
+
+
 
 
 
@@ -409,6 +381,22 @@ def main():
     minutes = int(elapsed_time / 60 - hours * 60)
     seconds = elapsed_time - minutes * 60 - hours * 3600
     print("Summary Table Runtime: {} hours, {} minutes, {} seconds".format(hours, minutes, seconds))
+
+
+
+    ''' Create Negatives List '''
+    tic = time.perf_counter()
+
+    print("\nCreating Negatives List from source:", results_file)
+    nuparse.make_negatives_list(results_file, negatives_list_output_file, fasta_dir)
+
+    toc = time.perf_counter()
+    elapsed_time = toc-tic
+    hours = int(elapsed_time / 3600)
+    minutes = int(elapsed_time / 60 - hours * 60)
+    seconds = elapsed_time - minutes * 60 - hours * 3600
+    print("Negatives List Runtime: {} hours, {} minutes, {} seconds".format(hours, minutes, seconds))
+
 
 
 

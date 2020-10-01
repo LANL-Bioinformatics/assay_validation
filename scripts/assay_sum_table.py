@@ -6,10 +6,7 @@ Created on Thu Apr  9 14:36:54 2020
 @author: adanm
 """
 
-import re
-import os
 import json
-import argparse as ap
 from datetime import datetime
 
 ''' 'Global' Variables '''
@@ -146,65 +143,3 @@ def generate_table(in_file, meta_filename, sum_data_file, table_dict, short_assa
 
     return table_dict
 
-
-def get_arguments():
-    parser = ap.ArgumentParser(prog='parse.py',
-                               description="""Parse""")
-    parser.add_argument('-r', '--resource_directory', metavar='[STR]', nargs=1, type=str,
-                        required=True, help="directory for resource files")
-    parser.add_argument('-R', '--results_directory', metavar='[STR]', nargs=1, type=str,
-                        required=True, help="directory for results files")
-    parser.add_argument('-f', '--fasta_directory', metavar='[STR]', nargs=1, type=str,
-                        required=True, help="location of genome fasta files")
-    return parser.parse_args()
-
-
-
-def main():
-    ''' Get command line argument '''
-    args = get_arguments()
-
-    resource_dir = args.resource_directory[0]
-    results_dir = args.results_directory[0]
-    fasta_dir = args.fasta_directory[0]
-
-    # File Names
-    meta_filename = os.path.join(resource_dir, "nextstrain_ncov_metadata.txt")
-    sum_data_file = os.path.join(resource_dir, "esummary_ncbi.txt")
-    output_file = os.path.join(results_dir, "summary_table.json")
-    short_assay_list_file = os.path.join(resource_dir, "reduced_assays.txt")
-
-    ''' Initialize table dictionary '''
-    table_dict = { "data": [ ] }
-
-    ''' Get short assay list '''
-    short_assay_list = []
-    with open(short_assay_list_file, 'r') as read_file:
-        for line in read_file.readlines():
-            fields = line.split()
-            assay_label = fields[0]
-            short_assay_list.append(assay_label)
-
-
-    ''' Find most recent json file output from Assay Monitor '''
-    json_file_list = [os.path.join(results_dir, f) for f in os.listdir(results_dir)
-                            if re.match(r'2020_.*Assay_Results\.json$', f) ]
-    json_file_list.sort()
-    json_file = json_file_list[-1]
-
-    ''' Create Summary table '''
-    print()
-    print("Creating summary table json from:", json_file)
-    table_dict = generate_table(json_file, meta_filename, sum_data_file, table_dict, short_assay_list)
-
-    ''' Output results as json file '''
-    with open(output_file, 'w') as file_handle:
-        print(json.dumps(table_dict, sort_keys=True, indent=4), file=file_handle)
-
-
-    print()
-    print("Finished")
-
-
-if __name__ == "__main__":
-    main()

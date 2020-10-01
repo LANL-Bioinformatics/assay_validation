@@ -10,7 +10,6 @@ import re
 import os
 import json
 from glob import glob
-import argparse as ap
 import pandas as pd
 
 
@@ -24,6 +23,7 @@ gp = "gaps"
 mm = "mismatches"
 positives_type = "True Positives"
 negatives_type = "False Negatives"
+
 
 
 def parse_tnt_results(full_dictionary, tnt_result):
@@ -219,22 +219,28 @@ def parse_tnt_results(full_dictionary, tnt_result):
 
 
 
-def determine_negatives(assay_file, tnt_result, full_dictionary, positives_type, negatives_type):
-    tnt_result_filename =tnt_result.split('/')[-1]
-    tnt_result_prefix = tnt_result_filename.split('.')[0]
-    seq_accession = re.sub(r'_results', '', tnt_result_prefix)
+def determine_negatives(assay_file, seq_accession, full_dictionary, positives_type, negatives_type):
+    # Jason's determine_negatives code
 
     ''' Negatives '''
     # Find which assays were negative from original list
     assay_list = full_dictionary[assay]
+
     for assay_dictionary in assay_list:
-#        name = assay_dictionary["Name"]
         positives_list = assay_dictionary[positives_type]
-        negatives_list = assay_dictionary[negatives_type]
-        if not seq_accession in [ acc_dictionary['Accession'] for acc_dictionary in positives_list]:
-            sequence_dict = { "Accession" : seq_accession}
-            negatives_list.append(sequence_dict)
+
+        found_match = False
+
+        for acc_dictionary in positives_list:
+            if seq_accession == acc_dictionary['Accession']:
+                found_match = True
+                break
+
+        if not found_match:
+            assay_dictionary[negatives_type].append( { "Accession" : seq_accession} )
+
     return full_dictionary
+
 
 
 def get_working_assays(assay_dict, positives_type, negatives_type):
@@ -368,27 +374,27 @@ def get_del_ct(primer_bases, target_bases, three_prime_table):
 def is_fatal_terminal_mismatch(primer_bases, target_bases, three_prime_table, del_ct_thresh):
     primer_bases, target_bases = process_Ns(primer_bases, target_bases)
     result = get_del_ct(primer_bases, target_bases, three_prime_table)
-    if result != 0.0:
-        print(result)
+    # if result != 0.0:
+    #     print(result)
     return get_del_ct(primer_bases, target_bases, three_prime_table) > del_ct_thresh
 
 
 def process_Ns(primer_bases, target_bases):
     if "N" in primer_bases:
-        print(primer_bases, target_bases)
+        # print(primer_bases, target_bases)
         if primer_bases[0] == "N":
             primer_bases = "{}{}".format(target_bases[0], primer_bases[1])
         if primer_bases[1] == "N":
             primer_bases = "{}{}".format(primer_bases[0], target_bases[1])
-        print(primer_bases, target_bases)
+        # print(primer_bases, target_bases)
 
     if "N" in target_bases:
-        print(primer_bases, target_bases)
+        # print(primer_bases, target_bases)
         if target_bases[0] == "N":
             target_bases = "{}{}".format(primer_bases[0], target_bases[1])
         if target_bases[1] == "N":
             target_bases = "{}{}".format(target_bases[0], primer_bases[1])
-        print(primer_bases, target_bases)
+        # print(primer_bases, target_bases)
     return primer_bases, target_bases
 
 
@@ -437,56 +443,70 @@ def filter_three_prime(Full_Dict, three_prime_table, del_ct_thresh):
     return Full_Dict
 
 
+def make_negatives_list(in_file, out_file):
 
-def get_arguments():
-    parser = ap.ArgumentParser(prog='assay_monitor.py', description="""Assay Monitor""")
-    parser.add_argument('-r', '--resource_directory', metavar='[STR]', nargs=1, type=str,
-                        required=True, help="resource files directory")
-    parser.add_argument('-R', '--results_directory', metavar='[STR]', nargs=1, type=str,
-                        required=True, help="results files directory")
-    parser.add_argument('-f', '--fasta_directory', metavar='[STR]', nargs=1, type=str,
-                        required=True, help="location of fasta files")
-    parser.add_argument('-t', '--tnt_results_directory', metavar='[STR]', nargs=1, type=str,
-                        required=True, help="location of tnt results")
-    return parser.parse_args()
+    with open(in_file) as json_file:
+        full_dict = json.load(json_file)
 
-
-
-def main():
-    ''' Get command line arguments '''
-    args = get_arguments()
-
-    resource_dir = args.resource_directory[0]
-    results_dir = args.results_directory[0]
-    fasta_dir = args.fasta_directory[0]
-    tnt_res_dir = args.tnt_results_directory[0]
-
-    # File Names
-    output_file_path = os.path.join(results_dir, "Assay_Results.json")
-    assay_file = os.path.join(resource_dir, "assays.txt")
-
-    # Initialize assay dictionary
-    Full_Dict = {assay : []}
-
-    ''' Parse tnt output for True Positives into multi-level dictionary for json file: '''
-    tnt_results_list = [ os.path.join(tnt_res_dir, f) for f in os.listdir(tnt_res_dir) if re.match(r'.*_results\.out', f) ]
-    for tnt_result in tnt_results_list:
-        Full_Dict = parse_tnt_results(Full_Dict, tnt_result)
+    with open(out_file, 'w') as write_file:
+        for assay_dict in full_dict[assay]:
+            this_assay = assay_dict[assay_name]
+            FN_list = assay_dict[negatives_type]
+            acc_list = []
+            for negative in FN_list:
+                seq_accesion = negative["Accession"]
+                acc_list.append(seq_accesion)
+            acc_string = "\t".join(acc_list)
+            print("{}\t{}".format(this_assay, acc_string), file=write_file)
 
 
-    ''' False Negatives'''
-    ''' Parse and Print false negative results '''
-    for tnt_result in tnt_results_list:
-        Full_Dict = determine_negatives(assay_file, tnt_result, Full_Dict, "True Positives", "False Negatives")
+def make_negatives_list(in_file, out_file, fasta_dir):
 
+    with open(in_file) as json_file:
+        full_dict = json.load(json_file)
 
-    with open(output_file_path, 'w') as file_handle:
-        print(json.dumps(Full_Dict, sort_keys=True, indent=4), file=file_handle)
+    assays_list = []
+    for assay_dict in full_dict[assay]:
+        this_assay = assay_dict[assay_name]
+        FN_list = assay_dict[negatives_type]
+        acc_list = []
+        for negative in FN_list:
+            seq_accesion = negative["Accession"]
+            file = os.path.join(fasta_dir, "{}.fna".format(seq_accesion))
 
+            with open(file, 'r') as read_file:
+                header = read_file.readline().strip().strip('>')
+            header_fields = header.split('|')
+            isolate = header_fields[0]
+            accession = header_fields[1]
+            col_date = header_fields[2]
+            if len(header_fields) >= 17:
+                location = header_fields[9].split('/')[2]
+                orig_lab = header_fields[14]
+                sub_lab = header_fields[15]
+                authors = header_fields[16]
+            elif len(header_fields) >= 5:
+                location = header_fields[4]
+                orig_lab = ""
+                sub_lab = ""
+                authors = ""
+            else:
+                location = ""
+                orig_lab = ""
+                sub_lab = ""
+                authors = ""
+            metadata_list = [ col_date, location, orig_lab, sub_lab, authors ]
+            acc_list.append({"Accession": seq_accesion, "Metadata": metadata_list})
+        assay_fails = { "Assay": this_assay, "Accession_List": acc_list}
+        assays_list.append(assay_fails)
 
-    print()
-    print("Finished")
+    print("Writing {}...".format(out_file))
+    with open(out_file, 'w') as write_file:
+        header_line = "Assay\tAccession\tCollection_Date\tCountry\tOriginating_Lab\tSubmitting_Lab\tAuthors"
+        print(header_line, file=write_file)
+        for each_assay in assays_list:
+            for each_acc in each_assay["Accession_List"]:
+                meta = "\t".join(each_acc["Metadata"])
+                line = "\t".join( [ each_assay[assay], each_acc["Accession"], meta ] )
+                print(line, file=write_file)
 
-
-if __name__ == "__main__":
-    main()
