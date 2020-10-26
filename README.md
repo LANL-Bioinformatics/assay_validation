@@ -47,7 +47,7 @@ The following Python libraries are required:
 
 ## Additional File Requirements
 
-These files must be present in the resource directory (Indicated by the `-r` argument):
+These files must be present in the resource directory (Indicated by the `-r` argument - see below):
 * "assays.txt"
 
     A list of assays with corresponding oligo sequences.  Each to a line.
@@ -93,7 +93,7 @@ The workflow mainly includes 3 major steps. All scripts mentioned below can be f
 
 We provide a script `am_start.sh` to glue all the scripts and to copy essential files to the web-app directory. Please use `am_start.sh -h` for more details.
 
-`usage: am_start.sh [-h] -u [STR] -p [STR] -e [STR] -m [STR] -M [STR] -s [STR] -r [STR] -R [STR] -f [STR] -t [STR]`
+`usage: am_start.sh [-h] -e [STR] -m [STR] -M [STR] -s [STR] -r [STR] -R [STR] -f [STR] -t [STR]`
 
 ## Citation
 
