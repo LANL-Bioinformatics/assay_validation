@@ -4,6 +4,13 @@ This is a web-app and workflow for computationally screening PCR-based assays ag
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
+---
+
+**NOTE:** 
+The program is designed to retrieve genomes from GISAID and/or NCBI for the users' convenience. We have removed any GISAID data from our web-app per GISAID's request since September 2020.
+
+---
+
 ## LANL software requirements
 
 The following software are required and the executable binaries should be put under your system PATH:
