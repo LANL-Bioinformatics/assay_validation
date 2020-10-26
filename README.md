@@ -58,7 +58,7 @@ CDC-2019-nCoV_N1 GACCCCAAAATCAGCGAAAT TCTGGTTACTGCCAGTTGAATCTG ACCCCGCATTACGTTTG
 * "reduced_assays.txt"
 
     A reduced list of assays to be used in the final results.  Same format
-as "assays.txt"
+as "assays.txt".  May be identical to assays.txt.
 * "del_ct_table.txt"
 
     A table of delta Ct values from { Li B, Kadura I, Fu DJ, Watson DE.  Genotyping with TaqMAMA. Genomics. 2004 Feb 1;83(2):311-20. }.  Tab separated.  Headers for Rows and columns.  First entry: "Row".  Example first two lines:
