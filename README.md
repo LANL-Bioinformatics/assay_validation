@@ -50,8 +50,7 @@ The following Python libraries are required:
 These files must be present in the resource directory (Indicated by the `-r` argument - see below):
 * "assays.txt"
 
-    A list of assays with corresponding oligo sequences.  Each to a line.
-Order of Oligo sequences: Forward primer Reverse primer, Probe.  Ex:
+    A list of assays with corresponding oligo sequences.  One assay to a line.  Order of oligo sequences: Forward primer, Reverse primer, Probe.  Separate with a space.  Example line:
 
 ```
 CDC-2019-nCoV_N1 GACCCCAAAATCAGCGAAAT TCTGGTTACTGCCAGTTGAATCTG ACCCCGCATTACGTTTGGTGGACC
@@ -62,10 +61,7 @@ CDC-2019-nCoV_N1 GACCCCAAAATCAGCGAAAT TCTGGTTACTGCCAGTTGAATCTG ACCCCGCATTACGTTTG
 as "assays.txt"
 * "del_ct_table.txt"
 
-    A table of delta Ct values from { Li B, Kadura I, Fu DJ, Watson DE.
-Genotyping with TaqMAMA. Genomics. 2004 Feb 1;83(2):311-20. }.
-Tab separated.  Headers for Rows and columns.  First entry: "Row".  
-Example first two lines:
+    A table of delta Ct values from { Li B, Kadura I, Fu DJ, Watson DE.  Genotyping with TaqMAMA. Genomics. 2004 Feb 1;83(2):311-20. }.  Tab separated.  Headers for Rows and columns.  First entry: "Row".  Example first two lines:
 
 ```
 Row     CC      GC      AC      TC      CG      GG      AG      TG      CA      GA      AA      TA      CT      GT      AT      TT
