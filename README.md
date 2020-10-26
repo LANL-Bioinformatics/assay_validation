@@ -37,6 +37,26 @@ The following Python libraries are required:
 * ete3 >= 3.1
 * pandas >= 0.24.0
 
+
+## Additional File Requirements
+
+These files must be present in the resource directory:
+* "assays.txt"
+    A list of assays with corresponding oligo sequences.  Each to a line.
+Order of Oligo sequences: Forward primer Reverse primer, Probe.  Ex:
+CDC-2019-nCoV_N1 GACCCCAAAATCAGCGAAAT TCTGGTTACTGCCAGTTGAATCTG ACCCCGCATTACGTTTGGTGGACC
+* "reduced_assays.txt"
+    A reduced list of assays to be used in the final results.  Same format
+as "assays.txt"
+* "del_ct_table.txt"
+    A table of delta Ct values from { Li B, Kadura I, Fu DJ, Watson DE.
+Genotyping with TaqMAMA. Genomics. 2004 Feb 1;83(2):311-20. }.
+Tab separated.  Headers for Rows and columns.  First entry: "Row"
+Example first two lines:
+Row     CC      GC      AC      TC      CG      GG      AG      TG      CA      GA      AA      TA      CT      GT      AT      TT
+CC      0.0     0.3     0.5     -0.3    6.3     17.5    19.2    11.9    5.1     15.7    11.4    12.4    0.4     11.0    10.4    3.7
+
+
 ## Workflow
 
 The workflow mainly includes 3 major steps. All scripts mentioned below can be found in the `scripts/` directory.
