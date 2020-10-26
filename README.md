@@ -63,8 +63,11 @@ as "assays.txt"
 Genotyping with TaqMAMA. Genomics. 2004 Feb 1;83(2):311-20. }.
 Tab separated.  Headers for Rows and columns.  First entry: "Row"
 Example first two lines:
+
+```
 Row     CC      GC      AC      TC      CG      GG      AG      TG      CA      GA      AA      TA      CT      GT      AT      TT
 CC      0.0     0.3     0.5     -0.3    6.3     17.5    19.2    11.9    5.1     15.7    11.4    12.4    0.4     11.0    10.4    3.7
+```
 
 
 ## Workflow
