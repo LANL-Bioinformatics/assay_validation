@@ -20,14 +20,9 @@ check_empty_argument()
 
 usage()
 {
-    echo "usage: am_start.sh [-h] -u [STR] -p [STR] -e [STR] -m [STR] -M [STR] -s [STR] -r [STR] -R [STR] -f [STR] -t [STR]
+    echo "usage: am_start.sh [-h] -e [STR] -m [STR] -M [STR] -s [STR] -r [STR] -R [STR] -f [STR] -t [STR]
 
 The following arguments are required:
-    '-u', '--gisaid_username' <username>
-        This is your username to log into gisaid.org
-
-    '-p', '--gisaid_passwd' <password>
-        This is your password for your GISAID login
 
     '-e', '--email' <email_address>'
         This is a requirement from ncbi for inclusion in a query
@@ -74,8 +69,6 @@ The following arguments are required:
 }
 
 ##### Main
-gisaid_username=
-gisaid_passwd=
 email=
 mindate=
 maxdate=
@@ -89,12 +82,6 @@ phyd3d_dist_directory=
 
 while [ "$1" != "" ]; do
     case $1 in
-        -u | --gisaid_username )    shift
-                                    gisaid_username=$1
-                                    ;;
-        -p | --gisaid_passwd )      shift
-                                    gisaid_passwd=$1
-                                    ;;
         -e | --email )              shift
                                     email=$1
                                     ;;
@@ -135,8 +122,6 @@ while [ "$1" != "" ]; do
 done
 
 # verify arguments
-check_empty_argument gisaid_username $gisaid_username
-check_empty_argument gisaid_passwd $gisaid_passwd
 check_empty_argument email $email
 check_empty_argument mindate $mindate
 check_empty_argument maxdate $maxdate
@@ -152,16 +137,13 @@ export PATH=scripts/:$PATH
 
 echo "Downloading genomes..."
 am_download.py \
-    -u $gisaid_username \
-    -p $gisaid_passwd \
     -e $email \
     -m $mindate \
     -M $maxdate \
     -s $seqlengthrange \
     -r $resource_directory \
     -R $results_directory \
-    -f $fasta_directory \
-    -t $tnt_results_directory
+    -f $fasta_directory
 
 echo "Evaluating assays..."
 assay_monitor.py \
