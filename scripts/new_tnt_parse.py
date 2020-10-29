@@ -100,7 +100,7 @@ def parse_tnt_results(full_dictionary, tnt_result):
                         elif fields[3] == "dimer":
                             sequence_dict["Alignments"][FP].update({"dimer alignment size": fields[7]})
                         else:
-                            sequence_dict["Alignments"][FP].update({fields[3].split('-')[0]: fields[3]})
+                            sequence_dict["Alignments"][FP].update({fields[3] : fields[4]})
 
 
                     if fields[0] == "reverse" and fields[1] == "primer":
@@ -109,7 +109,7 @@ def parse_tnt_results(full_dictionary, tnt_result):
                         elif fields[3] == "dimer":
                             sequence_dict["Alignments"][RP].update({"dimer alignment size": fields[7]})
                         else:
-                            sequence_dict["Alignments"][RP].update({fields[3].split('-')[0]: fields[3]})
+                            sequence_dict["Alignments"][RP].update({fields[3] : fields[4]})
 
                 if fields[0] == "probe"  and fields[1] == "align":
                     if fields[2] == "":
@@ -117,17 +117,17 @@ def parse_tnt_results(full_dictionary, tnt_result):
                     elif fields[2] == "dimer":
                         sequence_dict["Alignments"][Pr].update({"dimer alignment size": fields[6]})
                     else:
-                        sequence_dict["Alignments"][Pr].update({fields[2].split('-')[0]: fields[2]})
+                        sequence_dict["Alignments"][Pr].update({fields[2] : fields[3]})
 
 
                 ''' Populate Sequences fields'''
                 if fields[1] == "primer" and fields[2] == "=":
                     if fields[0] == "forward":
-                        sequence_dict["Sequences"].update({FP: fields[3]})
+                        sequence_dict["Sequences"].update({FP: fields[4]})
                     if fields[0]== "reverse":
-                        sequence_dict["Sequences"].update({RP: fields[3]})
+                        sequence_dict["Sequences"].update({RP: fields[4]})
                 if fields[0] == "probe" and fields[1] == "=":
-                    sequence_dict["Sequences"].update({Pr: fields[2]})
+                    sequence_dict["Sequences"].update({Pr: fields[3]})
 
 
                 ''' Populate melting temp fields '''
@@ -409,21 +409,25 @@ def filter_three_prime(Full_Dict, three_prime_table, del_ct_thresh):
             ''' Get last two bases of Primers '''
             # Forward Primer
             for_prim = each_pos["Alignments"]["Forward Primer"]["5'"]
-            for_seq = for_prim.split('-')[1][-2:]
+            for_seq = for_prim[-2:]
+            #for_seq = for_prim.split('-')[1][-2:]
 
             # Reverse Primer
             rev_prim = each_pos["Alignments"]["Reverse Primer"]["5'"]
-            rev_seq = rev_prim.split('-')[1][-2:]
+            rev_seq = rev_prim[-2:]
+            #rev_seq = rev_prim.split('-')[1][-2:]
 
             ''' Get corresponding bases from Targets '''
             # Forward Primer
             for_prim_targ = each_pos["Alignments"]["Forward Primer"]["3'"]
-            for_targ_seq = for_prim_targ.split('-')[1][-2:]
+            for_targ_seq = for_prim_targ[-2:]
+            #for_targ_seq = for_prim_targ.split('-')[1][-2:]
             for_targ_seq = complement(for_targ_seq)
 
             # Reverse Primer
             rev_prim_targ = each_pos["Alignments"]["Reverse Primer"]["3'"]
-            rev_targ_seq = rev_prim_targ.split('-')[1][-2:]
+            rev_targ_seq = rev_prim_targ[-2:]
+            #rev_targ_seq = rev_prim_targ.split('-')[1][-2:]
             rev_targ_seq = complement(rev_targ_seq)
 
             ''' If terminal MM put in False Negative List; else put in new TP list '''
