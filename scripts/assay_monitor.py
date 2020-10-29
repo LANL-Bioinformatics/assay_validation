@@ -169,10 +169,7 @@ def main():
     tnt_res_dir = args.tnt_results_directory[0]
 
     # TNTBLAST location
-    if platform == "darwin":
-        tntblast_location = "/Users/adanm/bin/"     # On Mac
-    elif platform == "linux":
-        tntblast_location = ""                      # On Rustang
+    tntblast_location = ""
 
     # File Names
     db_stats_file = os.path.join(resource_dir, "db_stats.json")
