@@ -7,7 +7,7 @@
 init_dir()
 {
     local DIRNAME=$1
-    [ -d $DIRNAME ] && mkdir -p $DIRNAME;
+    [ ! -d $DIRNAME ] && mkdir -p $DIRNAME;
     [ ! -d $DIRNAME ] && { echo "ERROR: Directory $DIRNAME DOES NOT exists."; exit 1; }
 }
 
@@ -78,7 +78,7 @@ resource_directory=
 results_directory=
 fasta_directory=
 tnt_results_directory=
-phyd3d_dist_directory=
+phyd3d_dist_directory='phyd3-am/dist'
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -131,8 +131,9 @@ init_dir $resource_directory
 init_dir $results_directory
 init_dir $fasta_directory
 init_dir $tnt_results_directory
-init_dir $phyd3d_dist_directory
+init_dir $phyd3d_dist_directory/data
 
+set -e;
 export PATH=scripts/:$PATH
 
 echo "Downloading genomes..."
@@ -144,6 +145,10 @@ am_download.py \
     -r $resource_directory \
     -R $results_directory \
     -f $fasta_directory
+
+# generate genbank metadata
+echo "isolate|accession|col_date|create_date|Country: region|seq_length|start_pos|end_pos|region|country|division|location, region_exposure|country_exposure|division_exposure|segment|host|age|sex|originating_lab|submitting_lab|authors|title|comment" | sed "s/|/\t/g" > $resource_directory/metadata.tsv
+cat $fasta_directory/All_Seqs.fasta | grep '>' | sed "s/>//" | sed "s/|/\t/g" >> $resource_directory/metadata.tsv
 
 echo "Evaluating assays..."
 assay_monitor.py \
@@ -157,11 +162,14 @@ primer_validation_vis.py \
     -n $newick_treefile \
     -m $resource_directory/metadata.tsv \
     -p $results_directory/match_table.csv \
-    -a $resource_directory/assay.txt \
+    -a $resource_directory/assays.txt \
     -r $results_directory/Assay_Results.json \
-    -o dist/data/SARS-CoV-2.xml
+    -o $phyd3d_dist_directory/data/SARS-CoV-2.xml
 
-cp $resource_directory/db_totals.json dist/data/
-cp $resource_directory/summary_table.json dist/data/
+cp $resource_directory/db_totals.json $phyd3d_dist_directory/data/
+cp $results_directory/summary_table.json $phyd3d_dist_directory/data/
+
+set +xe;
 
 echo "Done."
+echo "Open http://localhost:8080/ at your browser! Enjoy!"

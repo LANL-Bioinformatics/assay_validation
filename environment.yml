@@ -1,0 +1,18 @@
+name: assay_val
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - selenium
+  - firefox
+  - geckodriver=0.26.0
+  - requests
+  - pandas
+  - biopython
+  - bokeh
+  - ete3
+  - pycountry
+  - nodejs
+  - pip:
+    - pycountry-convert

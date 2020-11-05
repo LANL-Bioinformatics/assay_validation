@@ -216,13 +216,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="container-fluid mt-4">
 
           <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <div class="d-sm-flex align-items-center justify-content-between mb-2">
             <h2 class="h3 mb-0 text-gray-800"><i>In silico</i> Evaluation of Diagnostic Assays</h2>
           </div>
-          <p class="mb-4 small text-justify">Despite its slow mutation rate, SARS-CoV-2 continues to accumulate mutations as it persists in the human population. 
+
+          </p>  
+          <p class="mb-4 small text-justify">SARS-CoV-2 continues to accumulate mutations as it persists in the human population. 
             It is essential to continuously evaluate PCR-based diagnostic assays as new SARS-CoV-2 genome sequences become available.
-            To help address this challenge, LANL is computationally screening published PCR-based assays and LANL-designed assays against the increasing number of SARS-CoV-2 sequences being deposited for public release in <a target='_new' href="https://www.gisaid.org/"><img style="width: 53px; height: 100%;" src="images/gisaid.png"/></a> and <a target='_new' href="https://www.ncbi.nlm.nih.gov/genbank/sars-cov-2-seqs/">GenBank</a>.
-            A total of <a href="https://covid19.edgebioinformatics.org/#/surveyData" target="_parent"><span class="font-weight-bold final_db_tot"></span></a> SARS-CoV-2 genomes are screened as of <span id="final_date" class="font-weight-bold"></span>.
+            To help address this challenge, LANL is computationally screening published PCR-based assays and LANL-designed assays against the increasing number of SARS-CoV-2 sequences being deposited in <a target='_new' href="https://www.ncbi.nlm.nih.gov/genbank/sars-cov-2-seqs/">GenBank</a>.
+            A total of <a href="https://covid19.edgebioinformatics.org/#/surveyData" target="_parent"><span class="font-weight-bold final_db_tot"></span></a> SARS-CoV-2 genomes have been screened with <span class="font-weight-bold" id="assay-num"></span> assays as of <span id="final_date" class="font-weight-bold"></span>.
             An accession table of predicted assay failures can be downloaded <a href="data/assay_failures.tsv">here</a>.
           </p>
           <!-- Content Row -->
@@ -328,12 +330,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
           <!-- abstract -->
           <p class="small mt-2 mb-2 text-justify">
-            SARS-CoV-2 genomes are incrementally downloaded from public repositories daily and added to a local database. We include only SARS-CoV-2 genomes designated as 'complete' genomes (namely >29 kilobases or kb) in the GISAID EpiCoV™ database, and keep the same requirements of >29kb for genomes obtained from NCBI GenBank. The genomes from the two repositories are cross-validated to remove any duplicate entries. Our complete database stands at a total of
-            <span id="GISAID_tot">xxx</span> genomes from <a target='_new' href="https://www.gisaid.org/">GISAID</a> <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/gch2.1018">[1]</a><a href="https://doi.org/10.2807/1560-7917.ES.2017.22.13.30494">[2]</a> and 
-            <span id="GenBank_tot">xxx</span> genomes from <a target='_new' href="https://www.ncbi.nlm.nih.gov/genbank/sars-cov-2-seqs/">GenBank</a>, with 
-            <span id="overlap">xxx</span> genome duplicates found in both databases.
-            LANL assays were designed by iteratively finding the assay with the highest recall that does not interfere with an existing assay.  Interference includes primer and/or probe heterodimer formation and amplicon overlap.  The three assays target spike protein, RNA-dependent RNA polymerase, and nsp10.
-            Existing assays from USA CDC, China CDC, Charité in Berlin, Hong Kong University, and others
+            Full length (i.e. 29 kb or larger) SARS-CoV-2 genomes are accessed from GenBank daily. There are currently
+            <span class="final_db_tot">xxx</span> 
+            full length genomes.
+          </p>
+          <p class="small mt-2 mb-2 text-justify">
+            Multiplex-compatible LANL TaqMan PCR assays are designed by iteratively finding the assay with the highest recall (i.e. true positive rate or sensitivity) that does not “interfere” with a previously designed assay in the same multiplex pool. In this context, “interference” includes primer and/or probe heterodimer formation and amplicon overlap. The three LANL assays target the spike protein, RNA-dependent RNA polymerase, and nsp10. 
+            In addition to LANL assays, existing assays from USA CDC, China CDC, Charité in Berlin, Hong Kong University, and others 
             <a target="_new" href="https://www.cdc.gov/coronavirus/2019-ncov/lab/rt-pcr-panel-primer-probes.html">[3]</a>
             <a target="_new" href="https://www.nejm.org/doi/10.1056/NEJMoa2001017">[4]</a>
             <a target="_new" href="https://www.who.int/docs/default-source/coronaviruse/protocol-v2-1.pdf?sfvrsn=a9ef618c_2">[5]</a>
@@ -342,34 +345,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a target="_new" href="https://www.who.int/docs/default-source/coronaviruse/method-niid-20200123-2.pdf?sfvrsn=fbf75320_7">[8]</a>
             <a target="_new" href="https://www.who.int/docs/default-source/coronaviruse/real-time-rt-pcr-assays-for-the-detection-of-sars-cov-2-institut-pasteur-paris.pdf?sfvrsn=3662fcb6_2">[9]</a>
             <a target="_new" href="https://www.lgcgroup.com/uk-national-measurement-laboratory/">[10]</a>
-            are then screened against the
-            <span id="final_db_tot" class="final_db_tot">xxx</span>
-            remaining genomes in the database.
-            A predicted false negative is defined as an assay/target combination that has either (a) one or more oligo/target pairwise alignments with 3 or more mismatches, (b) one or more predicted oligo/target melting temperatures less than 40°C, or (c) one or more mismatches in the last two 3’ positions of a primer that are reported by  (Li et al, 2004) to inhibit detection by increasing the detection Ct by a value greater than, or equal to, 2. Melting temperatures are calculated using standard nearest-neighbor thermodynamic parameters
+            are screened against the
+            <span class="final_db_tot">xxx</span>
+            SARS-CoV-2 genomes. To facilitate comparison between assays, recall is calculated for each assay using the full length SARS-CoV-2 genomes. A predicted false negative is defined as an assay/target combination that has either (a) one or more oligo/target pairwise alignments with 3 or more mismatches, (b) one or more predicted oligo/target melting temperatures less than 40°C, or (c) one or more mismatches in the last two 3’ positions of a primer that are reported by (Li et al, 2004) to inhibit detection by increasing the detection Ct by 2 or more. Melting temperatures are calculated using standard nearest-neighbor thermodynamic parameters 
             <a target="_new" href="https://www.annualreviews.org/doi/abs/10.1146/annurev.biophys.32.110601.141800">[11]</a>
             <a target="_new" href="https://academic.oup.com/nar/article/26/11/2694/1130401">[12]</a>
             <a target="_new" href="https://www.pnas.org/content/95/4/1460">[13]</a>
-            <a target="_new" href="https://academic.oup.com/nar/article/28/9/1929/2903888">[14]</a>
+            <a target="_new" href="https://academic.oup.com/nar/article/28/9/1929/2903888">[14]</a>,
             as implemented by
             <a target="_new" href="https://github.com/jgans/thermonucleotideBLAST">ThermonucleotideBLAST</a>
             <a target="_new" href="https://academic.oup.com/nar/article/36/12/e74/1127990">[15]</a>.
             This tool uses free energy and melting temperature to predict whether binding occurs between the assay oligonucleotides (primers and probe), and target sequence.
           </p>
           <p class="small mt-2 mb-2 text-justify">
-            To facilitate presentation, match quality results for each assay/genome comparison are presented above. The heatmap and table show the number of mismatches in the oligonucleotide (primer or probe) that contain the most mismatches to the target genome. The phylogenetic tree is created using PhaME
+            The match quality results for each assay/genome are presented above. The heatmap shows the largest number of mismatches between any of the PCR primers or probe and each of the target genomes. The phylogenetic tree is created using PhaME
             <a target="_new" href="https://www.nature.com/articles/s41598-020-58356-1">[16]</a>.
-            Identical SARS-CoV-2 sequences and heatmap patterns are clustered and represented as collapsed branches in the tree (labels are in grey with the number of genomes and regional descriptions obtained from the strain names).
-            A total of <span id="final_col_tot">xxx</span> genomes are collaposed and the final tree has <span id="final_leaf_tot">xxx</span> leaf nodes.
-            The heatmap displays the predicted mismatches and assay outputs for each genome of SARS-CoV-2. This visualization is rendered using a custom PhyD3 phylogenetic tree viewer
+            Identical SARS-CoV-2 sequences and heatmap patterns are clustered and represented as collapsed branches in the tree (labels are in grey with the number of genomes and regional descriptions obtained from the strain names). A final total of
+            <span id="final_col_tot">xxx</span>
+            unique genomic lineages are further collapsed and the final tree has 
+            <span id="final_leaf_tot">xxx</span> leaf nodes.
+            The above visualization is rendered using a custom PhyD3 phylogenetic tree viewer 
             <a target="_new" href="https://academic.oup.com/bioinformatics/article/33/18/2946/3835380">[17]</a>.
             To facilitate comparison between assays, recall (true positive rate or sensitivity) is calculated for each assay. The filtered genomes mentioned above are used for determining mismatches to each oligonucleotide. The oligonucleotide with the most mismatches determines failure status of assay. Genomes with 3 or more mismatches count as false negatives, and 2 or fewer mismatches are true positives.
           </p>
-          <p class="small mt-2 mb-2 text-justify">
-            We gratefully acknowledge the team at GISAID for creating the the COVID-19 outbreak global database and resources, and the many authors from the originating and submitting laboratories of for the SARS-CoV-2 sequence data, which provides the foundation for the analyses tools provided here.
-            A full acknowledgements of all originating and submitting laboratories can be downloaded <a href="Acknowledgement_table.xls">[Acknowledgement table]</a>.
-          </p>
           <p class="small mt-2 mb-2 text-justify">This research was supported by LANL (20200732ER), by DTRA (CB10152 and CB10623) and by the DOE Office of Science (KP160101), through the National Virtual Biotechnology Laboratory, a consortium of DOE national laboratories focused on response to COVID-19, with funding provided by the Coronavirus CARES Act. The source code of the web-app is available at <a target="_new" href="https://github.com/LANL-Bioinformatics/assay_validation">GitHub</a>.</p>
-          <p class="small mt-2 mb-2 text-justify">Contributors: Po-E Li (po-e@lanl.gov), Adan Myers y Gutierrez (adanm@lanl.gov), Jason Gans (jgans@lanl.gov), Patrick Chain (pchain@lanl.gov);</p>
+          <p class="small mt-2 mb-2 text-justify">Contributors: Po-E Li (po-e@lanl.gov), Adan Myers y Gutierrez (adanm@lanl.gov), Jason Gans (jgans@lanl.gov), Patrick Chain (pchain@lanl.gov)</p>
         </div>
         <!-- /.container-fluid -->
 
@@ -381,7 +381,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
             <div class="text-white d-inline-block text-center align-middle" style="width: 17rem;">
-              <div class="text-nowrap mb-2">COVID-19 Assay Validation <a href="data/SARS-CoV-2.xml.stats.json" style="color: unset; cursor: default;">v0.2.718</a></div>
+              <div class="text-nowrap mb-2">COVID-19 Assay Validation <a href="data/SARS-CoV-2.xml.stats.json" style="color: unset; cursor: default;">v0.2.1013</a></div>
               <div class="text-nowrap mb-2">B-10, Los Alamos National Laboratory</div>
               <div class="text-nowrap">Copyright &copy; LANL 2020</div>
             </div>

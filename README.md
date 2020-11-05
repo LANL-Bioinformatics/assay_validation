@@ -11,19 +11,24 @@ The program is designed to retrieve genomes from GISAID and/or NCBI for the user
 
 ---
 
-## LANL software requirements
+## Software Requirements and Installation
 
-The following software are required and the executable binaries should be put under your system PATH:
+We provide a package file (environment.yml) to create a new environment (assay_val) using conda:
+
+```
+$ git clone https://github.com/LANL-Bioinformatics/assay_validation.git
+$ cd assay_validation/
+$ conda env create -f environment.yml
+$ conda activate assay_val
+```
+
+The following software are required to install manually and the executable binaries should be put under your system PATH:
 
 1. ThermonucleotideBLAST
     
     ThermonucleotideBLAST is a software program for searching a target database of nucleic acid sequences using an assay-specific query. The detail instructions for installation can be found on software's github https://github.com/jgans/thermonucleotideBLAST.
 
-2. EpiCoV_downloader
-
-    This is a GISAID sequence downloader for retrieving SARS-COV-2 genomes and the metadata. The detail instructions for installation can be found on software's github https://github.com/poeli/EpiCoV_downloader.
-
-3. PhyD3-am
+2. PhyD3-am
 
     This web-app includes a modified version of PhyD3 (GPL3) and visualizations specifically developed for displaying stats, metadata, phylogenetic tree and assay evaluation results. Here is a simple installation and usage:
 
@@ -34,16 +39,6 @@ The following software are required and the executable binaries should be put un
     ```
 
     The detail information can be found on original software's github https://github.com/vibbits/phyd3. 
-
-## Python library requirements
-
-The following Python libraries are required:
-
-* biopython >= 1.0
-* bokeh  >= 1.0
-* ete3 >= 3.1
-* pandas >= 0.24.0
-
 
 ## Additional File Requirements
 

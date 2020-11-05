@@ -7,7 +7,7 @@ import logging
 from PhyHeatmap import PhyXML, Metadata
 from AssayResult import AssayResult
 
-__version__='0.0.7'
+__version__='0.0.10'
 
 logging.basicConfig(
     level=logging.INFO,
@@ -30,6 +30,10 @@ def parse_params():
     p.add_argument('-p', '--primer',
                    metavar='[FILE]', type=str, required=True,
                    help="Input validation file for primers")
+
+    p.add_argument('-d', '--dataSource',
+                   metavar='[gisaid, genbank, both]', type=str, default='both',
+                   help="Data source [gisaid, genbank or both]")
 
     p.add_argument('-a', '--assayseq',
                    metavar='[FILE]', type=str, required=True,
@@ -58,7 +62,8 @@ def main():
                     argvs.outfile,
                     argvs.assayseq,
                     metadata,
-                    argvs.primer)
+                    argvs.primer,
+                    argvs.dataSource)
 
     logging.info("Removing leaves not in the match table...")
     phyxml.purge_tree()

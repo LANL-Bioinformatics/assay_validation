@@ -22,12 +22,28 @@ function pyHeatmapAddPopper(){
     // Get user details for tooltip
     function nodeMetadata(){
         let id = $(this).html().split(" ").slice(-2)[0]
-        html = `<div><div class="mt-2"><strong>${id}</strong></div><p>`
+        let field_name = ""
+        if( id.startsWith('EPI') ){
+            field_name = "GISAID:"
+        }
+        html = `<div><div class="mt-2"><strong>${field_name} ${id}</strong></div><p>`
+
         $.each(metadata.responseJSON[id], function (idx, val) {
             if( val && val != "?" && val != "Unknown"){
+                // strain  virus   gisaid_epi_isl  genbank_accession       date    
+                // region  country division        location        
+                // region_exposure country_exposure        division_exposure       segment length  
+                // host    age     sex     pangolin_lineage        GISAID_clade    
+                // originating_lab submitting_lab  authors url     title   paper_url       date_submitted
+                if( id.endsWith('+') && idx == "taxonomy"){
+                    idx = "group"
+                }
+                if( id.startsWith('EPI') && idx == "taxonomy"){
+                    val = `hCoV19/${val}`
+                }
                 idx = idx.replace("_", " ")
                 idx = idx.replace(/^./, idx[0].toUpperCase()); 
-                html += `<br><span><strong>${idx}</strong>: ${val}</span>`    
+                html += `<br><span><strong>${idx}</strong>: ${val}</span>`
             }
         })
         html += "</p></div>"
@@ -336,6 +352,7 @@ $(document).ready(function() {
         assay_tol_num = Object.keys(assay_stats.responseJSON.tree.assay_stats).length
         collapsed_genome_num = assay_stats.responseJSON.tree.collapsed_genome_num
         $('#spinner-assay-num').html(assay_tol_num.toLocaleString())
+        $('#assay-num').html(assay_tol_num.toLocaleString())
         $('#spinner-result-num').html( (assay_tol_num*collapsed_genome_num).toLocaleString() ) 
     })
 

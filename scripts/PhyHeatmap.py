@@ -36,18 +36,54 @@ class Metadata(object):
             elif file.endswith(".tsv") or file.endswith(".txt"):
                 df = pd.read_csv(file, sep="\t")
                 df = df.append(mdf)
-                df['taxonomy'] = df['strain']
-                df['acc'] = df['gisaid_epi_isl']
-                df['gender'] = df['sex']
-                df['collection_date'] = df['date']
-                df['continent'] = df['region']
-                df['sequencing_center'] = df['submitting_lab']
-                df['coverage'] = ""
-                
-                # copy metadata for genbank
-                df_gbk = df[df['genbank_accession']!='?'].copy()
-                df_gbk['acc'] = df_gbk['genbank_accession']
-                df = df.append(df_gbk)
+
+                # GISAID's metadata
+                # strain  virus   gisaid_epi_isl  genbank_accession       date    region  country division        location        region_exposure country_exposure
+                # division_exposure       segment length  host    age     sex     originating_lab submitting_lab  authors url     title   date_submitted
+                if 'gisaid_epi_isl' in df:
+                    df['taxonomy'] = df['strain']
+                    df['acc'] = df['gisaid_epi_isl']
+                    df['gender'] = df['sex']
+                    df['collection_date'] = df['date']
+                    df['continent'] = df['region']
+                    df['submitting_lab'] = df['submitting_lab']
+                    df['originating_lab'] = df['originating_lab']
+                    df['authors'] = df['authors']
+                    df['coverage'] = ""
+
+                # GenBank's metadata
+                # isolate accession col_date create_date Country: region
+                if 'accession' in df:
+                    import pycountry_convert as pc
+                    
+                    def country_to_continent(country_name):
+                        country_continent_name = ""
+                        try:
+                            country_alpha2 = pc.country_name_to_country_alpha2(country_name)
+                            country_continent_code = pc.country_alpha2_to_continent_code(country_alpha2)
+                            country_continent_name = pc.convert_continent_code_to_continent_name(country_continent_code)
+                        except:
+                            pass
+
+                        return country_continent_name
+                    
+                    df['acc'] = df['accession']
+                    df['taxonomy'] = df['isolate'].str.replace('SARS-CoV-2/human/', '')
+                    df['taxonomy'] = df['taxonomy'].str.replace('SARS-CoV-2/Homosapiens/', '')
+                    df['taxonomy'] = df['taxonomy'].str.replace('SARS-CoV-2/', '')
+                    df['collection_date'] = df['col_date']
+                    df['country'] = df["Country: region"].str.split(r"\s?:\s?", expand=True)[0]
+                    df['continent'] = df.apply(
+                        lambda row: country_to_continent(row.country),
+                        axis = 1
+                    )
+                    df['date_submitted'] = df['create_date']
+                    df['date_submitted'] = pd.to_datetime(df['date_submitted'], errors='coerce')
+                    df['date_submitted'] = df['date_submitted'].dt.strftime('%Y-%m-%d')
+                    df['gender'] = ""
+                    df['age'] = ""
+                    df['originating_lab'] = ""
+                    df['coverage'] = ""
 
             mdf = mdf.append(df)
         
@@ -63,12 +99,14 @@ class Metadata(object):
             'host': "Unknown",
             'continent': "Unknown", 
             'country': "Unknown",
-            'sequencing_center': "Unknown",
-            'coverage': "Unknown"
+            'coverage': "Unknown",
+            'submitting_lab': "Unknown",
+            'originating_lab': "Unknown",
+            'authors': "Unknown"
         }
         try:
             acc_series = self.meta_df.loc[[acc]].iloc[0]
-            return acc_series[['taxonomy', 'gender', 'age', 'collection_date','host','continent','country','sequencing_center','coverage']].fillna("None").to_dict()
+            return acc_series[['taxonomy', 'gender', 'age', 'collection_date','host','continent','country','coverage','submitting_lab','originating_lab','authors']].fillna("None").to_dict()
         except:
             return meta
 
@@ -88,7 +126,8 @@ class PhyXML(object):
                  xml_tree,
                  assayseq,
                  Metadata_obj,
-                 match_table_path):
+                 match_table_path,
+                 dataSource):
         self.nwk_tree = nwk_tree
         self.xml_tree = xml_tree
         self.assayseq = assayseq
@@ -96,7 +135,16 @@ class PhyXML(object):
         self.acc_id_map = {}
         self.meta_json = {}
         self.meta = Metadata_obj
+        self.dataSource = dataSource
         self.mt_df_orig = pd.read_csv(match_table_path, index_col=0)
+
+        if self.dataSource == 'gisaid':
+            cols = [c for c in self.mt_df_orig.columns if c and c.startswith('EPI_')]
+            self.mt_df_orig = self.mt_df_orig[cols]
+        elif self.dataSource == 'genbank':
+            cols = [c for c in self.mt_df_orig.columns if c and not c.startswith('EPI_')]
+            self.mt_df_orig = self.mt_df_orig[cols]
+        
         self.mt_df = self._process_match_table()
         self.tree_obj = self._load_tree()
         self.dom = None
@@ -128,7 +176,7 @@ class PhyXML(object):
 
     def _load_tree(self):
         # increase recursion limit
-        sys.setrecursionlimit(10000)
+        sys.setrecursionlimit(100000)
 
         # proceeded tree
         proc_tree = self.nwk_tree
@@ -139,13 +187,13 @@ class PhyXML(object):
         removing leaves not in overlap_table
         """
         # increase recursion limit
-        sys.setrecursionlimit(10000)
+        sys.setrecursionlimit(100000)
 
         t = self.tree_obj
         df = self.mt_df_orig
 
         for node in t.traverse("postorder"):
-            if node.name and df[node.name][0]=='None':
+            if node.name and ( node.name not in df or df[node.name][0]=='None'):
                 node.delete()
         
         self.tree_obj = t
@@ -237,10 +285,10 @@ class PhyXML(object):
 
 
         # increase recursion limit
-        sys.setrecursionlimit(10000)
+        sys.setrecursionlimit(100000)
         t = self.tree_obj
-        R = t.get_midpoint_outgroup()
-        t.set_outgroup(R)
+        #R = t.get_midpoint_outgroup()
+        #t.set_outgroup(R)
 
         if collapse_node_by_branch:
             # label nodes that will be collapsed
