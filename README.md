@@ -84,7 +84,9 @@ The workflow mainly includes 3 major steps. All scripts mentioned below can be f
 
 We provide a script `am_start.sh` to glue all the scripts and to copy essential files to the web-app directory. Please use `am_start.sh -h` for more details.
 
-`usage: am_start.sh [-h] -e [STR] -m [STR] -M [STR] -s [STR] -r [STR] -R [STR] -f [STR] -t [STR]`
+`usage: am_start.sh [-h] -e [STR] -m [STR] -M [STR] -s [STR] -r [STR] -R [STR] -f [STR] -t [STR] [ -D ]`
+
+Note the optional flag `-D` which will skip downloads.  Once you have sequences downloaded to the `fasta_directory`, it is not required to download every time (except to update with new sequences).
 
 ## Citation
 

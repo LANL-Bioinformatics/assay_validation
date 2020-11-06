@@ -20,7 +20,7 @@ check_empty_argument()
 
 usage()
 {
-    echo "usage: am_start.sh [-h] -e [STR] -m [STR] -M [STR] -s [STR] -r [STR] -R [STR] -f [STR] -t [STR]
+    echo "usage: am_start.sh [-h] -e [STR] -m [STR] -M [STR] -s [STR] -r [STR] -R [STR] -f [STR] -t [STR] [ -D ]
 
 The following arguments are required:
 
@@ -65,6 +65,14 @@ The following arguments are required:
     '-n', '--newick_treefile' <newick_tree_file>
         Input a tree file in newick format
 
+
+The following arguments are optional:
+    '-D', '--dont_download'
+        Use this flag to skip downloading sequences.  Sequences that 
+        have already been downloaded to the fasta_directory will be
+        processed by the assay validation script.
+
+
 "
 }
 
@@ -79,6 +87,7 @@ results_directory=
 fasta_directory=
 tnt_results_directory=
 phyd3d_dist_directory='phyd3-am/dist'
+skip_download=false
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -112,6 +121,8 @@ while [ "$1" != "" ]; do
         -d | --phyd3d_dist_directory )  shift
                                         phyd3d_dist_directory=$1
                                         ;;
+        -D | --dont_download )      skip_download=true
+                                    ;;
         -h | --help )               usage
                                     exit
                                     ;;
@@ -136,17 +147,22 @@ init_dir $phyd3d_dist_directory/data
 set -e;
 export PATH=scripts/:$PATH
 
-echo "Downloading genomes..."
-am_download.py \
-    -e $email \
-    -m $mindate \
-    -M $maxdate \
-    -s $seqlengthrange \
-    -r $resource_directory \
-    -R $results_directory \
-    -f $fasta_directory
+if ! $skip_download; then
+    echo -e "\nDownloading genomes...\n"
+    am_download.py \
+        -e $email \
+        -m $mindate \
+        -M $maxdate \
+        -s $seqlengthrange \
+        -r $resource_directory \
+        -R $results_directory \
+        -f $fasta_directory
+else
+    echo -e "\nSkipping download\n"
+fi
 
-echo "Evaluating assays..."
+
+echo -e "\nEvaluating assays...\n"
 assay_monitor.py \
     -r $resource_directory \
     -R $results_directory \
@@ -157,7 +173,7 @@ assay_monitor.py \
 echo "isolate|accession|col_date|create_date|Country: region|seq_length|start_pos|end_pos|region|country|division|location, region_exposure|country_exposure|division_exposure|segment|host|age|sex|originating_lab|submitting_lab|authors|title|comment" | sed "s/|/\t/g" > $resource_directory/metadata.tsv
 cat $fasta_directory/All_Seqs.fasta | grep '>' | sed "s/>//" | sed "s/|/\t/g" >> $resource_directory/metadata.tsv
 
-echo "Generating data for visualization..."
+echo -e "\nGenerating data for visualization...\n"
 primer_validation_vis.py \
     -n $newick_treefile \
     -m $resource_directory/metadata.tsv \
@@ -171,5 +187,5 @@ cp $results_directory/summary_table.json $phyd3d_dist_directory/data/
 
 set +xe;
 
-echo "Done."
+echo -e "\nDone."
 echo "Open http://localhost:8080/ at your browser! Enjoy!"
