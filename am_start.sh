@@ -146,16 +146,16 @@ am_download.py \
     -R $results_directory \
     -f $fasta_directory
 
-# generate genbank metadata
-echo "isolate|accession|col_date|create_date|Country: region|seq_length|start_pos|end_pos|region|country|division|location, region_exposure|country_exposure|division_exposure|segment|host|age|sex|originating_lab|submitting_lab|authors|title|comment" | sed "s/|/\t/g" > $resource_directory/metadata.tsv
-cat $fasta_directory/All_Seqs.fasta | grep '>' | sed "s/>//" | sed "s/|/\t/g" >> $resource_directory/metadata.tsv
-
 echo "Evaluating assays..."
 assay_monitor.py \
     -r $resource_directory \
     -R $results_directory \
     -f $fasta_directory \
     -t $tnt_results_directory
+
+# generate genbank metadata
+echo "isolate|accession|col_date|create_date|Country: region|seq_length|start_pos|end_pos|region|country|division|location, region_exposure|country_exposure|division_exposure|segment|host|age|sex|originating_lab|submitting_lab|authors|title|comment" | sed "s/|/\t/g" > $resource_directory/metadata.tsv
+cat $fasta_directory/All_Seqs.fasta | grep '>' | sed "s/>//" | sed "s/|/\t/g" >> $resource_directory/metadata.tsv
 
 echo "Generating data for visualization..."
 primer_validation_vis.py \
