@@ -23,7 +23,7 @@ return_type = 'gb' # GBSeq XML
 return_type = 'gbc' # INSDSeq XML
 return_mode = 'xml'
 
-max_returned_recs = 3000
+max_returned_recs = 99999
 split_size = 200
 date_type = 'pdat'
 
