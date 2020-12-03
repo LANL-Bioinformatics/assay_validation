@@ -7,7 +7,7 @@ import logging
 from PhyHeatmap import PhyXML, Metadata
 from AssayResult import AssayResult
 
-__version__='0.0.10'
+__version__='0.0.12'
 
 logging.basicConfig(
     level=logging.INFO,
@@ -43,6 +43,14 @@ def parse_params():
                    metavar='[FILE]', type=str, required=False,
                    help="Assay results in JSON format")
 
+    p.add_argument('-ncb', '--not-collapse-by-branch',
+                   action='store_true', default=False, dest='ncb',
+                   help="Not collapsing tree nodes on zero branch length")
+
+    p.add_argument('-ncp', '--not-collapse-by-pattern',
+                   action='store_true', default=False, dest='ncp',
+                   help="Not collapsing tree nodes on the same heatmap pattern")
+
     p.add_argument('-m', '--metadata',
                    metavar='[JSON]', nargs='+', type=str, required=True,
                    help="Input metadata JSON for all strains")
@@ -57,7 +65,7 @@ def main():
     logging.info("Loading metadata...")
     metadata = Metadata(argvs.metadata)
 
-    logging.info("Initing tree...")
+    logging.info("Initing object...")
     phyxml = PhyXML(argvs.newick,
                     argvs.outfile,
                     argvs.assayseq,
@@ -65,12 +73,15 @@ def main():
                     argvs.primer,
                     argvs.dataSource)
 
+    logging.info("Generating the JSON file for geo map...")
+    phyxml.write_geo_vis_json()
+
     logging.info("Removing leaves not in the match table...")
     phyxml.purge_tree()
 
     logging.info("Collapsing leaves by branch leangth and patterns...")
-    phyxml.collapsing_nodes(collapse_node_by_branch=True,
-                            collapse_node_by_pattern=True,
+    phyxml.collapsing_nodes(collapse_node_by_branch= not argvs.ncb,
+                            collapse_node_by_pattern= not argvs.ncp,
                             collapse_branch_len=0)
 
     logging.info("Adding metadata to nodes...")

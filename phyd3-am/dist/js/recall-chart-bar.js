@@ -163,23 +163,23 @@ function initRes() {
         labels: [],
         datasets: [{
             label: '1 mismatch',
-            backgroundColor: "#76b7b2",
+            backgroundColor: "#858796",
             data: []
           }, {
             label: '2 mismatch',
-            backgroundColor: "#edc949",
+            backgroundColor: "#76b7b2",
             data: []
           }, {
             label: '3 mismatch',
-            backgroundColor: "#f28e2c",
+            backgroundColor: "#edc949",
             data: []
           }, {
             label: '4-10 mismatch',
-            backgroundColor: "#e15759",
+            backgroundColor: "#f28e2c",
             data: []
           }, {
             label: '11+ mismatch',
-            backgroundColor: "#bab0ab",
+            backgroundColor: "#e15759",
             data: []
           }]
     }
@@ -189,9 +189,10 @@ function assay_mm_charts(assay_id) {
     if(typeof(assay_id)==undefined){
         assay_stats = this.innerHTML
     }
-
+    
     $('#assayStatsModal').modal('show')
     $('#assayStatsModal').on('shown.bs.modal', function(){
+        resetMap(assay_id);
         summary_data = {}
         summary_json.responseJSON.data.forEach(element => {
             if(element.name == assay_id){
@@ -292,11 +293,11 @@ function assay_mm_charts(assay_id) {
                 maxBarThickness: 8,
                 minBarLength: 2,
                 backgroundColor: [
+                    "#bab0ab",
                     "#76b7b2",
                     "#edc949",
                     "#f28e2c",
                     "#e15759",
-                    "#bab0ab"
                 ], 
                 data: [
                     summary_data['1_mm'],

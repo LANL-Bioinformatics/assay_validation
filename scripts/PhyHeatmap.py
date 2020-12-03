@@ -8,6 +8,8 @@ from bokeh import palettes
 from ete3 import Tree
 import json
 import logging
+import pycountry_convert as pc
+import numpy as np
 
 class Metadata(object):
     """ This is the class for getting metadata for seqeunces.
@@ -54,8 +56,6 @@ class Metadata(object):
                 # GenBank's metadata
                 # isolate accession col_date create_date Country: region
                 if 'accession' in df:
-                    import pycountry_convert as pc
-                    
                     def country_to_continent(country_name):
                         country_continent_name = ""
                         try:
@@ -287,8 +287,8 @@ class PhyXML(object):
         # increase recursion limit
         sys.setrecursionlimit(100000)
         t = self.tree_obj
-        #R = t.get_midpoint_outgroup()
-        #t.set_outgroup(R)
+        R = t.get_midpoint_outgroup()
+        t.set_outgroup(R)
 
         if collapse_node_by_branch:
             # label nodes that will be collapsed
@@ -701,3 +701,91 @@ class PhyXML(object):
 
     def get_genome_list(self):
         return self.acc_list
+
+    def write_geo_vis_json(self):
+        metadata = self.meta
+        df = self.mt_df_orig
+
+        # transform data
+        def transform_func(x):
+            if x == "None":
+                return 'None'
+            elif int(x) > 3 and int(x) < 8:
+                return '4-7'
+            elif int(x) == -1 or int(x) >= 8:
+                return '8+'
+            else:
+                return str(x)
+
+        df = df.applymap(transform_func)
+
+        # drop non-qualified genomes and transpose table -> loc[genomes, assays]
+        mt_df = df.replace(to_replace=['None'], value=np.nan).dropna(how='all', axis=1).T
+        mt_df = mt_df.reset_index()
+        mt_df = mt_df.rename(columns={'index':'acc'})
+
+        # adding metadata
+        mt_df['country'] = ""
+        mt_df['col_date'] = ""
+        mt_df['continent'] = ""
+
+        mt_df['country'] = mt_df.apply(
+            lambda row: metadata.get_meta(row.acc)['country'],
+            axis = 1
+        )
+
+        mt_df['col_date'] = mt_df.apply(
+            lambda row: metadata.get_meta(row.acc)['collection_date'],
+            axis = 1
+        )
+
+        mt_df['continent'] = mt_df.apply(
+            lambda row: metadata.get_meta(row.acc)['continent'],
+            axis = 1
+        )
+
+        def country_alpha3(cn_name):
+            alpha3 = "UKN"
+            try:
+                alpha3 = pc.country_name_to_country_alpha3(cn_name)
+            except:
+                pass
+            return alpha3
+
+        mt_df['country_alpha3'] = mt_df.apply(
+            lambda row: "UKN" if row.country == 'None' or row.country == 'Unknown' else country_alpha3(row.country),
+            axis = 1
+        )
+
+        mt_df = mt_df.drop(['acc'], axis = 1)
+
+        # retriving all assays
+        cols = mt_df.columns[:-4]
+
+        mt_df.loc[:, 'col_date'] = pd.to_datetime(mt_df.loc[:, 'col_date'], errors='coerce')
+        mt_df.loc[:, 'col_date'] = mt_df.loc[:, 'col_date'].dt.strftime('%Y-%m-%d')
+
+        # preparing for outputs
+        df_out = mt_df.groupby(['country_alpha3','col_date']).agg({i:'value_counts' for i in cols}).unstack().fillna(0)
+        df_out = df_out.drop(['UKN'], axis = 0)
+
+        df_out = df_out.astype(int)
+        df_out = df_out.rename(columns={"0":"Perfect match", "1":"1 mismatch", "2":"2 mismatches", "3":"3 mismatches", "4-7":"4-7 mismatches", "8+": "8+/failures"})
+
+        from collections import defaultdict
+
+        d = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
+
+        for (assay, mismatch) in df_out:
+            for (country, date) in df_out[[(assay, mismatch)]].index:
+                if df_out.loc[(country, date),(assay, mismatch)] > 0:
+                    d[assay][mismatch][country][date] = int(df_out.loc[(country, date),(assay, mismatch)])
+                    
+                    if not mismatch in ["Perfect match", "1 mismatch", "2 mismatches"]:
+                        if not date in d[assay]['Total failures'][country]:
+                            d[assay]['Total failures'][country][date] = int(df_out.loc[(country, date),(assay, mismatch)])
+                        else:
+                            d[assay]['Total failures'][country][date] += int(df_out.loc[(country, date),(assay, mismatch)])    
+        
+        with open(f'{self.xml_tree}.geo.json', 'w') as fp:
+            json.dump(d, fp)

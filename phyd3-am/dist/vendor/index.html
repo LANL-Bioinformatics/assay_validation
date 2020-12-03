@@ -28,16 +28,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   
   <!-- Custom styles for this page -->
   <link rel="stylesheet" href="vendor/datatables/dataTables.bootstrap4.min.css" />
-  <link rel="stylesheet" href="vendor/select2/select2.min.css" />
-  <link rel="stylesheet" href="vendor/daterangepicker/daterangepicker.css" />
-  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
-  <style>
-    @media screen and (min-width: 676px) {
-        .modal-dialog {
-          max-width: 1000px; /* New width for default modal */
-        }
-    }
-</style>
 </head>
 
 <body id="page-top">
@@ -391,7 +381,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
             <div class="text-white d-inline-block text-center align-middle" style="width: 17rem;">
-              <div class="text-nowrap mb-2">COVID-19 Assay Validation <a href="data/SARS-CoV-2.xml.stats.json" style="color: unset; cursor: default;">v0.3.1130</a></div>
+              <div class="text-nowrap mb-2">COVID-19 Assay Validation <a href="data/SARS-CoV-2.xml.stats.json" style="color: unset; cursor: default;">v0.2.1013</a></div>
               <div class="text-nowrap mb-2">B-10, Los Alamos National Laboratory</div>
               <div class="text-nowrap">Copyright &copy; LANL 2020</div>
             </div>
@@ -454,22 +444,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="modal-body" id="assayResultModal-body">
           <div class="mm-desc"></div>
 
-          <!--Map -->
-          <div class="form-group">
-            <label></label>
-            <div id="collection_date_range"
-              style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-              <i class="fa fa-calendar"></i>&nbsp;
-              <span></span> <i class="fa fa-caret-down"></i>
-            </div>
-          </div><div class="form-group">
-            <select id="map-mismatch-select2" class="form-control">
-            </select>
-          </div>
-          <div id="map-mismatch" style="width:100%; height:600px; "></div>
-          <br></br>
-          <!--END Map -->
-
           <span><strong>Distribution of mismatch</strong></span>
           <div class="mm-chart-area">
             <canvas id="assay-mm-detail"></canvas>
@@ -506,10 +480,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- <script src="vendor/chartist.min.js/chartist.min.js"></script> -->
   <script src="vendor/datatables/jquery.dataTables.min.js"></script>
   <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-  <script src="vendor/select2/select2.min.js"></script>
-  <script src="vendor/daterangepicker/moment.min.js"></script>
-  <script src="vendor/daterangepicker/daterangepicker.js"></script>
-  <script src="vendor/leaflet/leaflet.js"></script>
 
   <!-- d3 -->
   <script src="vendor/d3js/d3.v3.min.js"></script>
@@ -522,7 +492,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script src="js/phyd3.js"></script>
   <script src="js/recall-chart-bar.js"></script>
   <script src="js/assay.js"></script>
-  <script src="js/mismatch-map.js"></script>
 </body>
 
 </html>
