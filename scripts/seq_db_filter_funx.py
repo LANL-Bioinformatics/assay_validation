@@ -55,24 +55,11 @@ def filter_len_et_orgs(file_list, min_seq_len):
             kept += 1
     list_after = len(list_to_return)
 
-    tallies = [ list_before, removed, bat_pang_short_tally[0], bat_pang_short_tally[1], bat_pang_short_tally[2], kept, list_after ]
+    tallies = [ list_before, removed, bat_pang_short_tally[0], 
+               bat_pang_short_tally[1], bat_pang_short_tally[2], 
+               kept, list_after ]
+    
+    total_list_len = len(list_to_return)
 
-    return list_to_return, tallies
+    return list_to_return, tallies, total_list_len
 
-
-
-def filter_dbs_output_all(in_file_list, min_seq_len):
-
-
-    print("\nFiltering GenBank...")
-    file_list, tallies = filter_len_et_orgs(in_file_list, min_seq_len)
-
-
-    print()
-    print("gen")
-    print(["before", "removed", "bat", "pang", "short", "kept", "after"])
-    print(tallies)
-
-    total_list_len = len(file_list)
-
-    return file_list, tallies, total_list_len
